@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Sample SAM Template for Multiple Functions
+
+Globals:
+  Function:
+    Timeout: 3
+    Runtime: python3.10
+    Architectures:
+      - x86_64
+
+Resources:
+  PingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_functions/
+      Handler: api.ping.lambda_handler
+      Events:
+        Ping:
+          Type: Api
+          Properties:
+            Path: /ping
+            Method: get
+
+  SampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_functions/
+      Handler: api.sample.lambda_handler
+      Events:
+        Sample:
+          Type: Api
+          Properties:
+            Path: /sample
+            Method: get
+
+  ExportXlsxFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_functions/
+      Handler: api.export_file.lambda_handler
+      Events:
+        ExportXlsx:
+          Type: Api
+          Properties:
+            Path: /export-file
+            Method: get
+            RestApiId: !Ref ExportXLSXApi
+
+  ExportXLSXApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: ExportXLSXApi
+      StageName: Prod
+      BinaryMediaTypes:
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+Outputs:
+  PingApiUrl:
+    Description: "API Gateway endpoint URL for Ping function"
+    Value: !Sub "https://${ExportXLSXApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping/"
+
+  SampleApiUrl:
+    Description: "API Gateway endpoint URL for Sample function"
+    Value: !Sub "https://${ExportXLSXApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/sample/"
+
+  ExportXlsxApiUrl:
+    Description: "API Gateway endpoint URL for ExportXlsx function"
+    Value: !Sub "https://${ExportXLSXApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/export-file/"

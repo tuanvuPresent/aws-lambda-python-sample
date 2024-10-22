@@ -1,0 +1,6 @@
+{
+  "body": "{\"message\": \"hello world\"}",
+  "resource": "/hello",
+  "path": "/hello",
+  "httpMethod": "GET"
+}
